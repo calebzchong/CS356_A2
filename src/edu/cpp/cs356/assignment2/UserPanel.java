@@ -1,9 +1,7 @@
 package edu.cpp.cs356.assignment2;
 
 import javax.swing.JFrame;
-import java.awt.List;
 import java.util.Hashtable;
-
 import javax.swing.JTextArea;
 import javax.swing.border.BevelBorder;
 import javax.swing.DefaultListModel;
@@ -19,6 +17,10 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class UserPanel {
 
@@ -26,6 +28,9 @@ public class UserPanel {
 	private User user;
 	private Hashtable<String, User> users;
 	private JTextField txtUserId;
+	private JButton btnPost;
+	private JList<Post> newsFeedList;
+	private NewsFeedObserver ob;
 	
 //	/**
 //	 * Launch the application.
@@ -57,6 +62,12 @@ public class UserPanel {
 	 */
 	private void initialize() {
 		frame = new JFrame();
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				user.getNewsFeed().detachNewsFeedObserver(ob);
+			}
+		});
 		frame.setTitle( user.toString() + "'s User Panel");
 		frame.setResizable(false);
 		frame.setBounds(100, 100, 350, 350);
@@ -64,12 +75,35 @@ public class UserPanel {
 		frame.getContentPane().setLayout(null);
 		
 		JTextArea txtPost = new JTextArea();
+		txtPost.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				int key = e.getKeyCode();
+				if (key == KeyEvent.VK_ENTER) {
+					btnPost.doClick();
+				}
+			}
+		});
+		txtPost.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				if(txtPost.getText().trim().equals(""))
+					txtPost.setText("Write Post Here");
+			}
+
+			@Override
+			public void focusGained(FocusEvent e) {
+				if( txtPost.getText().trim().equals("Write Post Here"))
+					txtPost.setText("");
+			}
+		});
 		txtPost.setBounds(1, 1, 11, 58);
 		txtPost.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		txtPost.setText("Write post here");
 		txtPost.setLineWrap(true);
 //		txtPost.setBounds(0, 264, 25, 17);
 		frame.getContentPane().add(txtPost);
+		
+		attachNewsFeedObserver();
 		
 		JScrollPane scrollPane = new JScrollPane(txtPost);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -77,11 +111,11 @@ public class UserPanel {
 		scrollPane.setBounds(10, 145, 252, 48);
 		frame.getContentPane().add(scrollPane);
 		
-		DefaultListModel<User> listModel = new DefaultListModel<>();
+		DefaultListModel<User> followingListModel = new DefaultListModel<>();
 		for ( User f : user.getFollowers() ){
-			listModel.addElement(f);
+			followingListModel.addElement(f);
 		}
-		JList<User> followingList = new JList<>(listModel);
+		JList<User> followingList = new JList<>(followingListModel);
 		followingList.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		followingList.setBounds(10, 39, 314, 95);
 		frame.getContentPane().add(followingList);
@@ -90,15 +124,15 @@ public class UserPanel {
 		btnFollow.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				User follow = users.get( txtUserId.getText() );
-				if ( follow != null ){
-					user.addFollower( follow );
-					listModel.addElement(follow);
+				if ( isValidUserToFollow(follow) ){
+					user.follow( follow );
+					followingListModel.addElement(follow);
 					int index = followingList.getModel().getSize()-1;
 					followingList.setSelectedIndex(index);
 					followingList.ensureIndexIsVisible(index);
-					txtUserId.setText("" +index);
+					txtUserId.setText("");
 				} else {
-					txtUserId.setText("User ID not found");
+					txtUserId.setText("Not a valid user ID.");
 				}
 				
 			}
@@ -107,6 +141,15 @@ public class UserPanel {
 		frame.getContentPane().add(btnFollow);
 		
 		txtUserId = new JTextField();
+		txtUserId.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				int key = e.getKeyCode();
+				if (key == KeyEvent.VK_ENTER) {
+					btnFollow.doClick();
+				}
+			}
+		});
 		txtUserId.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent e) {
@@ -124,7 +167,13 @@ public class UserPanel {
 		frame.getContentPane().add(txtUserId);
 		txtUserId.setColumns(10);
 		
-		JButton btnPost = new JButton("Post");
+		btnPost = new JButton("Post");
+		btnPost.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				user.post(txtPost.getText());
+				txtPost.setText("");
+			}
+		});
 		btnPost.setMargin(new Insets(2, 2, 2, 2));
 		btnPost.setBounds(272, 145, 52, 48);
 		frame.getContentPane().add(btnPost);
@@ -134,12 +183,39 @@ public class UserPanel {
 		lblFollowing.setBounds(10, 14, 52, 14);
 		frame.getContentPane().add(lblFollowing);
 		
+		
+		DefaultListModel<Post> newsFeedListModel = new DefaultListModel<>();
+		for ( Post p : user.getNewsFeed().getPosts() ){
+			newsFeedListModel.addElement(p);
+		}
+		newsFeedList = new JList<>(newsFeedListModel);
+		newsFeedList.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		newsFeedList.setBounds(10, 215, 314, 95);
+		frame.getContentPane().add(newsFeedList);
+		
+		JLabel lblNewLabel = new JLabel("News Feed");
+		lblNewLabel.setBounds(10, 196, 177, 14);
+		frame.getContentPane().add(lblNewLabel);
+		
 
 	}
 	
-	private void setHintText( JTextField txt, String msg){
-		txt.addFocusListener(new FocusAdapter() {
-
-		});
+	private void attachNewsFeedObserver() {
+		ob = new NewsFeedObserver( user.getNewsFeed(), this );
+		user.getNewsFeed().attachNewsFeedObserver( ob );
 	}
+	
+	public void addNewsFeedPost( Post post ){
+		DefaultListModel<Post> model = (DefaultListModel<Post>)newsFeedList.getModel();
+		model.addElement(post);
+		int index = model.getSize()-1;
+		newsFeedList.setSelectedIndex(index);
+		newsFeedList.ensureIndexIsVisible(index);
+	}
+
+	private boolean isValidUserToFollow(User follow) {
+		return follow != null && follow != user && !user.getFollowers().contains(follow);
+	}
+
+	
 }

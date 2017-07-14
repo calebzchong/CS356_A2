@@ -6,19 +6,41 @@ import java.util.List;
 public class User implements TwitterEntity{
 	
 	private String name;
-	private List<User> followers;
+	private List<User> following;
+	private List<PostObserver> postObservers;
+	private List<Post> posts;
+	private UserNewsFeed newsFeed;
 	
 	public User( String name ){
 		this.name = name;
-		followers = new ArrayList<>();
+		following = new ArrayList<>();
+		postObservers = new ArrayList<>();
+		posts = new ArrayList<>();
+		newsFeed = new UserNewsFeed();
 	}
 	
-	public void addFollower( User user ){
-		followers.add(user);
+	public void follow( User user ){
+		following.add(user);
+		user.postObservers.add( new PostObserver(user.posts, newsFeed ) );
+	}
+	
+	public UserNewsFeed getNewsFeed() {
+		return newsFeed;
+	}
+
+	public void post( String msg ){
+		posts.add( new Post(this, msg ) );
+		notifyObservers();
+	}
+	
+	private void notifyObservers(){
+		for ( PostObserver ob : postObservers ){
+			ob.update();
+		}
 	}
 	
 	public List<User> getFollowers(){
-		return followers;
+		return following;
 	}
 
 	@Override
