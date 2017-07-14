@@ -1,6 +1,5 @@
 package edu.cpp.cs356.assignment2;
 
-import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -21,7 +20,10 @@ import java.awt.event.KeyEvent;
 import java.util.Hashtable;
 
 public class AdminPanel {
-
+	
+	//Singleton
+	private static AdminPanel singleton = new AdminPanel();
+	
 	private JFrame frmMiniTwitter;
 	private JTextField txtUserID;
 	private JTree userTree;
@@ -35,23 +37,15 @@ public class AdminPanel {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					AdminPanel window = new AdminPanel();
-					window.frmMiniTwitter.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+
 	}
 
 	/**
 	 * Create the application.
 	 */
-	public AdminPanel() {
+	private AdminPanel() {
 		initialize();
+		this.frmMiniTwitter.setVisible(true);
 	}
 
 	/**
@@ -227,6 +221,10 @@ public class AdminPanel {
 			node = (DefaultMutableTreeNode)node.getParent();
 		}
 		return node;
+	}
+
+	public static AdminPanel getInstance() {
+		return singleton;
 	}
 	
 	

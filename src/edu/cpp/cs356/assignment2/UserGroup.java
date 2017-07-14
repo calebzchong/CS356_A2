@@ -3,6 +3,10 @@ package edu.cpp.cs356.assignment2;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Composite Design pattern for User 
+ *
+ */
 public class UserGroup implements TwitterEntity {
 
 	private String name;
