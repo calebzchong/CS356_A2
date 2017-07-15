@@ -2,6 +2,11 @@ package edu.cpp.cs356.assignment2;
 
 import java.util.List;
 
+/**
+ * Observer class for user's posts.
+ * When notified, it fetches new posts from followed user and adds them
+ * to the follower's newsfeed.
+ */
 public class PostObserver implements Observer{
 
 	private List<Post> posts;

@@ -7,6 +7,7 @@ import javax.swing.JButton;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.JTextField;
@@ -21,6 +22,11 @@ import java.awt.event.KeyEvent;
 import java.util.Hashtable;
 import java.awt.Toolkit;
 
+/**
+ *  The main GUI. Contains Admin functions such as adding users and groups.
+ *  It uses the singleton pattern.
+ *
+ */
 public class AdminPanel {
 	
 	//Singleton
@@ -65,7 +71,8 @@ public class AdminPanel {
 		frmMiniTwitter.setBounds(100, 100, 457, 266);
 		frmMiniTwitter.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmMiniTwitter.getContentPane().setLayout(null);
-
+		
+		
 		rootGroup = new UserGroup("Root");
 		users = new Hashtable<String, User>();
 		groups = new Hashtable<String, UserGroup>();
@@ -88,6 +95,7 @@ public class AdminPanel {
 
 		JButton btnAddUser = new JButton("Add User");
 		btnAddUser.addActionListener(new ActionListener() {
+
 			public void actionPerformed(ActionEvent e) {
 				String userID = txtUserID.getText();
 				if ( users.containsKey(userID) ){
@@ -98,13 +106,15 @@ public class AdminPanel {
 					
 					User newUser = new User(userID);
 					addingGroup.add( newUser );
-					node.add( new DefaultMutableTreeNode(newUser) );
+					DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(newUser);
+					node.add( newNode );
 					users.put(newUser.toString(), newUser );
 					
 					countingVisitor.resetCount();
 					rootGroup.acceptVisitor(countingVisitor);
 					
 					treeModel.reload();
+					userTree.expandPath(new TreePath(node.getPath()));
 					txtUserID.setText("");
 				}
 
@@ -151,6 +161,7 @@ public class AdminPanel {
 					rootGroup.acceptVisitor(countingVisitor);
 					
 					treeModel.reload();
+					userTree.expandPath(new TreePath(node.getPath()));
 					txtGroupID.setText("");
 				}
 			
@@ -232,7 +243,7 @@ public class AdminPanel {
 				positiveVisitor.resetCount();
 				rootGroup.acceptVisitor(positiveVisitor);
 				PositiveVisitor v = (PositiveVisitor)positiveVisitor;
-				String msg = String.format("%d%% of messages are positive.", (int)(v.getPositiveRatio()*100) );
+				String msg = String.format("%d%% of messages are positive.", (int)(v.getPositivePercentage()*100) );
 				JOptionPane.showMessageDialog(null, msg , "Positive Messages", JOptionPane.PLAIN_MESSAGE);
 			}
 		});

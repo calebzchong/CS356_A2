@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * Composite Design pattern for User 
- *
+ * It is a group of users.
  */
 public class UserGroup implements TwitterEntity {
 

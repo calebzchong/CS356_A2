@@ -3,12 +3,18 @@ package edu.cpp.cs356.assignment2;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * User Class.
+ * Composite design pattern.
+ * Uses observers to notify new posts.
+ *
+ */
 public class User implements TwitterEntity{
 	
 	private String name;
 	private List<User> following;
-	private List<PostObserver> postObservers;
-	private List<Post> posts;
+	private List<PostObserver> postObservers; //Followers
+	private List<Post> posts; //My Posts
 	private UserNewsFeed newsFeed;
 	
 	public User( String name ){
@@ -17,7 +23,6 @@ public class User implements TwitterEntity{
 		postObservers = new ArrayList<>();
 		posts = new ArrayList<>();
 		newsFeed = new UserNewsFeed();
-//		this.follow( this);
 		postObservers.add( new PostObserver(posts, newsFeed));
 	}
 	
@@ -33,7 +38,6 @@ public class User implements TwitterEntity{
 	public void post( String msg ){
 		Post p = new Post(this, msg );
 		posts.add( p );
-//		newsFeed.addPost(p);
 		notifyObservers();
 	}
 	

@@ -22,6 +22,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+/**
+ * GUI for User functions
+ * Performs actions such as following people, making posts, and displaying
+ * and updating news feed.
+ */
 public class UserPanel {
 
 	protected JFrame frame;
@@ -31,22 +36,6 @@ public class UserPanel {
 	private JButton btnPost;
 	private JList<Post> newsFeedList;
 	private NewsFeedObserver ob;
-	
-//	/**
-//	 * Launch the application.
-//	 */
-//	public static void main(String[] args) {
-//		EventQueue.invokeLater(new Runnable() {
-//			public void run() {
-//				try {
-//					UserPanel window = new UserPanel();
-//					window.frame.setVisible(true);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//	}
 
 	/**
 	 * Create the application.

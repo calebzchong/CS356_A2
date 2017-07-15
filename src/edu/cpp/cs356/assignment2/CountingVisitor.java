@@ -1,5 +1,9 @@
 package edu.cpp.cs356.assignment2;
 
+/**
+ * Visitor for counting stuff.
+ * Counts total number of users, groups, and messages.
+ */
 public class CountingVisitor implements Visitor{
 
 	private int usersCount;

@@ -4,6 +4,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Visitor for counting positive messages.
+ * Visitor goes through every user's posts, and checks each word against a
+ * predefined list of "positive" words. It counts the number of posts containing
+ * positive word(s) and return the percentage of positive posts.
+ *
+ */
 public class PositiveVisitor implements Visitor {
 	
 	private int positiveCount;
@@ -36,7 +43,7 @@ public class PositiveVisitor implements Visitor {
 		}
 	}
 	
-	public double getPositiveRatio(){
+	public double getPositivePercentage(){
 		if ( totalCount == 0 ){
 			return 0;
 		}
