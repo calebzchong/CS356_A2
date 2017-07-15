@@ -17,12 +17,13 @@ public class User implements TwitterEntity{
 		postObservers = new ArrayList<>();
 		posts = new ArrayList<>();
 		newsFeed = new UserNewsFeed();
-		this.follow( this);
-//		postObservers.add( new PostObserver(posts, newsFeed));
+//		this.follow( this);
+		postObservers.add( new PostObserver(posts, newsFeed));
 	}
 	
 	public void follow( User user ){
 		user.postObservers.add( new PostObserver( user.posts, newsFeed ) );
+		following.add(user);
 	}
 	
 	public UserNewsFeed getNewsFeed() {
