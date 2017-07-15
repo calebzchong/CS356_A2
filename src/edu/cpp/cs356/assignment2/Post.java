@@ -9,6 +9,14 @@ public class Post {
 		this.user = user;
 	}
 	
+	public String getMsg(){
+		return msg;
+	}
+	
+	public User getUser(){
+		return user;
+	}
+	
 	public String toString(){
 		return user + ": " + msg;
 	}

@@ -18,15 +18,21 @@ public class UserGroup implements TwitterEntity {
 		entities = new ArrayList<TwitterEntity>();
 	}
 	
-	
 	public void add( TwitterEntity e ){
 		entities.add(e);
 	}
 	
-
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	@Override
+	public void acceptVisitor( Visitor v) {
+		v.visit(this);
+		for ( TwitterEntity u : entities ){
+			u.acceptVisitor(v);
+		}
 	}
 	
 

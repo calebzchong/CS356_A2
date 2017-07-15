@@ -17,11 +17,12 @@ public class User implements TwitterEntity{
 		postObservers = new ArrayList<>();
 		posts = new ArrayList<>();
 		newsFeed = new UserNewsFeed();
+		this.follow( this);
+//		postObservers.add( new PostObserver(posts, newsFeed));
 	}
 	
 	public void follow( User user ){
-		following.add(user);
-		user.postObservers.add( new PostObserver(user.posts, newsFeed ) );
+		user.postObservers.add( new PostObserver( user.posts, newsFeed ) );
 	}
 	
 	public UserNewsFeed getNewsFeed() {
@@ -29,7 +30,9 @@ public class User implements TwitterEntity{
 	}
 
 	public void post( String msg ){
-		posts.add( new Post(this, msg ) );
+		Post p = new Post(this, msg );
+		posts.add( p );
+//		newsFeed.addPost(p);
 		notifyObservers();
 	}
 	
@@ -37,6 +40,10 @@ public class User implements TwitterEntity{
 		for ( PostObserver ob : postObservers ){
 			ob.update();
 		}
+	}
+	
+	public List<Post> getPosts(){
+		return posts;
 	}
 	
 	public List<User> getFollowers(){
@@ -47,4 +54,11 @@ public class User implements TwitterEntity{
 	public String toString() {
 		return name;
 	}
+
+	@Override
+	public void acceptVisitor( Visitor v) {
+		v.visit(this);
+	}
+
+
 }

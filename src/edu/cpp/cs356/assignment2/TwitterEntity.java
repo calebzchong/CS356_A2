@@ -1,6 +1,6 @@
 package edu.cpp.cs356.assignment2;
 
 public interface TwitterEntity {
-
-	String toString();
+	public String toString();
+	public void acceptVisitor(Visitor v);
 }

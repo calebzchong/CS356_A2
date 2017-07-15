@@ -1,6 +1,7 @@
 package edu.cpp.cs356.assignment2;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JTree;
@@ -18,6 +19,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Hashtable;
+import java.awt.Toolkit;
 
 public class AdminPanel {
 	
@@ -32,6 +34,9 @@ public class AdminPanel {
 	private JTextField txtGroupID;
 	private DefaultTreeModel treeModel;
 	private Hashtable<String, User> users;
+	private Hashtable<String, UserGroup> groups;
+	private Visitor countingVisitor;
+	private Visitor positiveVisitor;
 
 	/**
 	 * Launch the application.
@@ -42,6 +47,7 @@ public class AdminPanel {
 
 	/**
 	 * Create the application.
+	 * @wbp.parser.entryPoint
 	 */
 	private AdminPanel() {
 		initialize();
@@ -53,6 +59,7 @@ public class AdminPanel {
 	 */
 	private void initialize() {
 		frmMiniTwitter = new JFrame();
+		frmMiniTwitter.setIconImage(Toolkit.getDefaultToolkit().getImage(AdminPanel.class.getResource("/edu/cpp/cs356/assignment2/icon.png")));
 		frmMiniTwitter.setResizable(false);
 		frmMiniTwitter.setTitle("Mini Twitter - Admin Panel");
 		frmMiniTwitter.setBounds(100, 100, 457, 266);
@@ -61,6 +68,9 @@ public class AdminPanel {
 
 		rootGroup = new UserGroup("Root");
 		users = new Hashtable<String, User>();
+		groups = new Hashtable<String, UserGroup>();
+		countingVisitor = new CountingVisitor();
+		positiveVisitor = new PositiveVisitor();
 		
 		userTree = new JTree();
 		userTree.setBorder(BorderFactory.createEmptyBorder(1, 5, 1, 5));
@@ -79,17 +89,24 @@ public class AdminPanel {
 		JButton btnAddUser = new JButton("Add User");
 		btnAddUser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
-				DefaultMutableTreeNode node = getAddingGroup();
-				UserGroup addingGroup = (UserGroup)node.getUserObject();
-
-				User newUser = new User(txtUserID.getText());
-				addingGroup.add( newUser );
-				node.add( new DefaultMutableTreeNode(newUser) );
-				users.put(newUser.toString(), newUser );
-
-				treeModel.reload();
-				txtUserID.setText("");
+				String userID = txtUserID.getText();
+				if ( users.containsKey(userID) ){
+					txtUserID.setText("UserID Already Exists");
+				} else {
+					DefaultMutableTreeNode node = getAddingGroup();
+					UserGroup addingGroup = (UserGroup)node.getUserObject();
+					
+					User newUser = new User(userID);
+					addingGroup.add( newUser );
+					node.add( new DefaultMutableTreeNode(newUser) );
+					users.put(newUser.toString(), newUser );
+					
+					countingVisitor.resetCount();
+					rootGroup.acceptVisitor(countingVisitor);
+					
+					treeModel.reload();
+					txtUserID.setText("");
+				}
 
 			}
 		});
@@ -118,15 +135,25 @@ public class AdminPanel {
 		btnAddGroup.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				DefaultMutableTreeNode node = getAddingGroup();
-				UserGroup addingGroup = (UserGroup)node.getUserObject();
+				String groupID = txtGroupID.getText();
+				if ( groups.containsKey(groupID)){
+					txtGroupID.setText("Group already exists.");
+					
+				} else {
+					DefaultMutableTreeNode node = getAddingGroup();
+					UserGroup addingGroup = (UserGroup)node.getUserObject();
+					UserGroup newUserGroup = new UserGroup(txtGroupID.getText());
+					addingGroup.add( newUserGroup );
+					node.add( new DefaultMutableTreeNode(newUserGroup) );
+					groups.put(groupID, newUserGroup);
 
-				UserGroup newUserGroup = new UserGroup(txtGroupID.getText());
-				addingGroup.add( newUserGroup );
-				node.add( new DefaultMutableTreeNode(newUserGroup) );
-
-				treeModel.reload();
-				txtGroupID.setText("");
+					countingVisitor.resetCount();
+					rootGroup.acceptVisitor(countingVisitor);
+					
+					treeModel.reload();
+					txtGroupID.setText("");
+				}
+			
 			}
 		});
 		btnAddGroup.setFont(new Font("Tahoma", Font.PLAIN, 10));
@@ -163,25 +190,55 @@ public class AdminPanel {
 		btnOpenUser.setBounds(210, 72, 225, 23);
 		frmMiniTwitter.getContentPane().add(btnOpenUser);
 
-		JButton btnShowUserTotal = new JButton("Show User Total");
-		btnShowUserTotal.setMargin(new Insets(2, 2, 2, 2));
-		btnShowUserTotal.setBounds(210, 161, 104, 23);
-		frmMiniTwitter.getContentPane().add(btnShowUserTotal);
+		JButton btnUserTotal = new JButton("Show User Total");
+		btnUserTotal.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CountingVisitor v = (CountingVisitor)countingVisitor;
+				String msg = "There are " + v.getUsersCount() + " users total.";
+				JOptionPane.showMessageDialog(null, msg , "User Count", JOptionPane.PLAIN_MESSAGE);
+			}
+		});
+		btnUserTotal.setMargin(new Insets(2, 2, 2, 2));
+		btnUserTotal.setBounds(210, 161, 104, 23);
+		frmMiniTwitter.getContentPane().add(btnUserTotal);
 
-		JButton btnNewButton_1 = new JButton("Show Group Total");
-		btnNewButton_1.setMargin(new Insets(2, 2, 2, 2));
-		btnNewButton_1.setBounds(324, 161, 111, 23);
-		frmMiniTwitter.getContentPane().add(btnNewButton_1);
+		JButton btnGroupTotal = new JButton("Show Group Total");
+		btnGroupTotal.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CountingVisitor v = (CountingVisitor)countingVisitor;
+				String msg = "There are " + v.getGroupsCount() + " groups total.";
+				JOptionPane.showMessageDialog(null, msg , "Group Count", JOptionPane.PLAIN_MESSAGE);
+			}
+		});
+		btnGroupTotal.setMargin(new Insets(2, 2, 2, 2));
+		btnGroupTotal.setBounds(324, 161, 111, 23);
+		frmMiniTwitter.getContentPane().add(btnGroupTotal);
 
-		JButton btnNewButton_2 = new JButton("Show Messages");
-		btnNewButton_2.setMargin(new Insets(2, 2, 2, 2));
-		btnNewButton_2.setBounds(210, 195, 104, 23);
-		frmMiniTwitter.getContentPane().add(btnNewButton_2);
+		JButton btnMessagesCount = new JButton("Message Count");
+		btnMessagesCount.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CountingVisitor v = (CountingVisitor)countingVisitor;
+				String msg = "There are " + v.getMessageCount() + " messages total.";
+				JOptionPane.showMessageDialog(null, msg , "Message Count", JOptionPane.PLAIN_MESSAGE);
+			}
+		});
+		btnMessagesCount.setMargin(new Insets(2, 2, 2, 2));
+		btnMessagesCount.setBounds(210, 195, 104, 23);
+		frmMiniTwitter.getContentPane().add(btnMessagesCount);
 
-		JButton btnNewButton_3 = new JButton("Show Positive %");
-		btnNewButton_3.setMargin(new Insets(2, 2, 2, 2));
-		btnNewButton_3.setBounds(324, 195, 111, 23);
-		frmMiniTwitter.getContentPane().add(btnNewButton_3);
+		JButton btnPositivePercent = new JButton("Positive Msg %");
+		btnPositivePercent.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				positiveVisitor.resetCount();
+				rootGroup.acceptVisitor(positiveVisitor);
+				PositiveVisitor v = (PositiveVisitor)positiveVisitor;
+				String msg = String.format("%d%% of messages are positive.", (int)(v.getPositiveRatio()*100) );
+				JOptionPane.showMessageDialog(null, msg , "Positive Messages", JOptionPane.PLAIN_MESSAGE);
+			}
+		});
+		btnPositivePercent.setMargin(new Insets(2, 2, 2, 2));
+		btnPositivePercent.setBounds(324, 195, 111, 23);
+		frmMiniTwitter.getContentPane().add(btnPositivePercent);
 	}
 
 	private void setHintText( JTextField txt, String msg){

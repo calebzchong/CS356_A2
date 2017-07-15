@@ -70,7 +70,7 @@ public class UserPanel {
 		});
 		frame.setTitle( user.toString() + "'s User Panel");
 		frame.setResizable(false);
-		frame.setBounds(100, 100, 350, 350);
+		frame.setBounds(100, 100, 350, 392);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
@@ -190,12 +190,17 @@ public class UserPanel {
 		}
 		newsFeedList = new JList<>(newsFeedListModel);
 		newsFeedList.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		newsFeedList.setBounds(10, 215, 314, 95);
-		frame.getContentPane().add(newsFeedList);
+		newsFeedList.setBounds(10, 215, 314, 137);
+//		frame.getContentPane().add(newsFeedList);
 		
 		JLabel lblNewLabel = new JLabel("News Feed");
 		lblNewLabel.setBounds(10, 196, 177, 14);
 		frame.getContentPane().add(lblNewLabel);
+		
+		JScrollPane newsFeedScrollPane = new JScrollPane();
+		newsFeedScrollPane.setViewportView(newsFeedList);
+		newsFeedScrollPane.setBounds(10, 221, 324, 131);
+		frame.getContentPane().add(newsFeedScrollPane);
 		
 
 	}
