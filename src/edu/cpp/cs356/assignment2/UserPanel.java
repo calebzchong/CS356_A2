@@ -113,15 +113,19 @@ public class UserPanel {
 		btnFollow.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				User follow = users.get( txtUserId.getText() );
-				if ( isValidUserToFollow(follow) ){
+				if ( follow == null ){
+					txtUserId.setText("User does not exist.");
+				} else if( follow == user ){
+					txtUserId.setText("You cannot follow yourself.");
+				} else if ( user.getFollowers().contains(follow)){
+					txtUserId.setText("Already following this user.");
+				} else {
 					user.follow( follow );
 					followingListModel.addElement(follow);
 					int index = followingList.getModel().getSize()-1;
 					followingList.setSelectedIndex(index);
 					followingList.ensureIndexIsVisible(index);
 					txtUserId.setText("");
-				} else {
-					txtUserId.setText("Not a valid user ID.");
 				}
 				
 			}
@@ -207,9 +211,4 @@ public class UserPanel {
 		newsFeedList.ensureIndexIsVisible(index);
 	}
 
-	private boolean isValidUserToFollow(User follow) {
-		return follow != null && follow != user && !user.getFollowers().contains(follow);
-	}
-
-	
 }

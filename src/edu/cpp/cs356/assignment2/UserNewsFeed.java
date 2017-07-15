@@ -3,6 +3,11 @@ package edu.cpp.cs356.assignment2;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * News feed class
+ * Container for list of posts in user's newsfeed
+ * Allows attaching observers for updates
+ */
 public class UserNewsFeed {
 	private List<Post> feedPosts;
 	private List<NewsFeedObserver> observers;
