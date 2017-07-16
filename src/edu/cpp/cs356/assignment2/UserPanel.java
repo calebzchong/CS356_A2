@@ -29,7 +29,7 @@ import java.awt.event.WindowEvent;
  */
 public class UserPanel {
 
-	protected JFrame frame;
+	private JFrame frame;
 	private User user;
 	private Hashtable<String, User> users;
 	private JTextField txtUserId;
@@ -44,6 +44,7 @@ public class UserPanel {
 		this.user = user;
 		this.users = users;
 		initialize();
+		frame.setVisible(true);
 	}
 
 	/**

@@ -43,14 +43,7 @@ public class AdminPanel {
 	private Hashtable<String, UserGroup> groups;
 	private Visitor countingVisitor;
 	private Visitor positiveVisitor;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-
-	}
-
+	
 	/**
 	 * Create the application.
 	 * @wbp.parser.entryPoint
@@ -193,8 +186,7 @@ public class AdminPanel {
 			public void actionPerformed(ActionEvent e) {
 				User user = getSelectedUser();
 				if ( user != null ){
-					UserPanel window = new UserPanel(user, users);
-					window.frame.setVisible(true);
+					new UserPanel(user, users);
 				}
 			}
 		});
@@ -294,7 +286,4 @@ public class AdminPanel {
 	public static AdminPanel getInstance() {
 		return singleton;
 	}
-	
-	
-
 }

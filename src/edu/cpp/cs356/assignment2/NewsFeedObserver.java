@@ -2,6 +2,10 @@ package edu.cpp.cs356.assignment2;
 
 import java.util.List;
 
+/**
+ * 
+ *
+ */
 public class NewsFeedObserver implements Observer{
 
 	private UserPanel panel;
