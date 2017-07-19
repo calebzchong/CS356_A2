@@ -1,6 +1,7 @@
 package edu.cpp.cs356.assignment2;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,8 +17,11 @@ public class User implements TwitterEntity{
 	private List<PostObserver> postObservers; //Followers
 	private List<Post> posts; //My Posts
 	private UserNewsFeed newsFeed;
+	private Date creationTime;
+	
 	
 	public User( String name ){
+		creationTime = new Date();
 		this.name = name;
 		following = new ArrayList<>();
 		postObservers = new ArrayList<>();
@@ -63,6 +67,16 @@ public class User implements TwitterEntity{
 	@Override
 	public void acceptVisitor( Visitor v) {
 		v.visit(this);
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+	
+	@Override
+	public Date getCreationTime() {
+		return creationTime;
 	}
 
 

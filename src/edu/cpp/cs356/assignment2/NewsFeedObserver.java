@@ -22,6 +22,7 @@ public class NewsFeedObserver implements Observer{
 	public void update() {
 		for ( ; current < posts.size(); current++){
 			panel.addNewsFeedPost(posts.get(current));
+			panel.update();
 		}
 	}
 

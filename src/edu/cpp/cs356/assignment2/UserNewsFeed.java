@@ -1,6 +1,7 @@
 package edu.cpp.cs356.assignment2;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -11,14 +12,17 @@ import java.util.List;
 public class UserNewsFeed {
 	private List<Post> feedPosts;
 	private List<NewsFeedObserver> observers;
+	private Date lastUpdateTime;
 	
 	public UserNewsFeed(){
 		feedPosts = new ArrayList<Post>();
 		observers = new ArrayList<NewsFeedObserver>();
+		lastUpdateTime = new Date();
 	}
 
 	public void addPost(Post post) {
 		feedPosts.add(post);
+		lastUpdateTime = new Date();
 		notifyObservers();
 	}
 	
@@ -34,6 +38,10 @@ public class UserNewsFeed {
 	
 	public void detachNewsFeedObserver( NewsFeedObserver ob ){
 		observers.remove(ob);
+	}
+	
+	public Date getLastUpdateTime(){
+		return lastUpdateTime;
 	}
 	
 	public List<Post> getPosts(){

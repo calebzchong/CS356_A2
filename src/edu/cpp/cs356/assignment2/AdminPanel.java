@@ -19,6 +19,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.text.SimpleDateFormat;
 import java.util.Hashtable;
 import java.awt.Toolkit;
 
@@ -28,10 +29,10 @@ import java.awt.Toolkit;
  *
  */
 public class AdminPanel {
-	
+
 	//Singleton
 	private static AdminPanel singleton = new AdminPanel();
-	
+
 	private JFrame frmMiniTwitter;
 	private JTextField txtUserID;
 	private JTree userTree;
@@ -43,7 +44,7 @@ public class AdminPanel {
 	private Hashtable<String, UserGroup> groups;
 	private Visitor countingVisitor;
 	private Visitor positiveVisitor;
-	
+
 	/**
 	 * Create the application.
 	 * @wbp.parser.entryPoint
@@ -64,14 +65,14 @@ public class AdminPanel {
 		frmMiniTwitter.setBounds(100, 100, 457, 266);
 		frmMiniTwitter.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmMiniTwitter.getContentPane().setLayout(null);
-		
-		
+
+
 		rootGroup = new UserGroup("Root");
 		users = new Hashtable<String, User>();
 		groups = new Hashtable<String, UserGroup>();
 		countingVisitor = new CountingVisitor();
 		positiveVisitor = new PositiveVisitor();
-		
+
 		userTree = new JTree();
 		userTree.setBorder(BorderFactory.createEmptyBorder(1, 5, 1, 5));
 		userTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -91,21 +92,21 @@ public class AdminPanel {
 
 			public void actionPerformed(ActionEvent e) {
 				String userID = txtUserID.getText();
-				if ( users.containsKey(userID) ){
+				if ( users.containsKey(userID) || groups.contains(userID) ){
 					txtUserID.setText("UserID Already Exists");
 				} else {
 					DefaultMutableTreeNode node = getAddingGroup();
 					UserGroup addingGroup = (UserGroup)node.getUserObject();
-					
+
 					User newUser = new User(userID);
 					addingGroup.add( newUser );
 					DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(newUser);
 					node.add( newNode );
 					users.put(newUser.toString(), newUser );
-					
-					countingVisitor.resetCount();
+
+					countingVisitor.reset();
 					rootGroup.acceptVisitor(countingVisitor);
-					
+
 					treeModel.reload();
 					userTree.expandPath(new TreePath(node.getPath()));
 					txtUserID.setText("");
@@ -139,9 +140,9 @@ public class AdminPanel {
 			public void actionPerformed(ActionEvent e) {
 
 				String groupID = txtGroupID.getText();
-				if ( groups.containsKey(groupID)){
+				if ( groups.containsKey(groupID) || users.containsKey(groupID) ){
 					txtGroupID.setText("Group already exists.");
-					
+
 				} else {
 					DefaultMutableTreeNode node = getAddingGroup();
 					UserGroup addingGroup = (UserGroup)node.getUserObject();
@@ -150,14 +151,14 @@ public class AdminPanel {
 					node.add( new DefaultMutableTreeNode(newUserGroup) );
 					groups.put(groupID, newUserGroup);
 
-					countingVisitor.resetCount();
+					countingVisitor.reset();
 					rootGroup.acceptVisitor(countingVisitor);
-					
+
 					treeModel.reload();
 					userTree.expandPath(new TreePath(node.getPath()));
 					txtGroupID.setText("");
 				}
-			
+
 			}
 		});
 		btnAddGroup.setFont(new Font("Tahoma", Font.PLAIN, 10));
@@ -202,7 +203,7 @@ public class AdminPanel {
 			}
 		});
 		btnUserTotal.setMargin(new Insets(2, 2, 2, 2));
-		btnUserTotal.setBounds(210, 161, 104, 23);
+		btnUserTotal.setBounds(210, 127, 104, 23);
 		frmMiniTwitter.getContentPane().add(btnUserTotal);
 
 		JButton btnGroupTotal = new JButton("Show Group Total");
@@ -214,7 +215,7 @@ public class AdminPanel {
 			}
 		});
 		btnGroupTotal.setMargin(new Insets(2, 2, 2, 2));
-		btnGroupTotal.setBounds(324, 161, 111, 23);
+		btnGroupTotal.setBounds(324, 127, 111, 23);
 		frmMiniTwitter.getContentPane().add(btnGroupTotal);
 
 		JButton btnMessagesCount = new JButton("Message Count");
@@ -226,13 +227,13 @@ public class AdminPanel {
 			}
 		});
 		btnMessagesCount.setMargin(new Insets(2, 2, 2, 2));
-		btnMessagesCount.setBounds(210, 195, 104, 23);
+		btnMessagesCount.setBounds(210, 161, 104, 23);
 		frmMiniTwitter.getContentPane().add(btnMessagesCount);
 
 		JButton btnPositivePercent = new JButton("Positive Msg %");
 		btnPositivePercent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				positiveVisitor.resetCount();
+				positiveVisitor.reset();
 				rootGroup.acceptVisitor(positiveVisitor);
 				PositiveVisitor v = (PositiveVisitor)positiveVisitor;
 				String msg = String.format("%d%% of messages are positive.", (int)(v.getPositivePercentage()*100) );
@@ -240,8 +241,42 @@ public class AdminPanel {
 			}
 		});
 		btnPositivePercent.setMargin(new Insets(2, 2, 2, 2));
-		btnPositivePercent.setBounds(324, 195, 111, 23);
+		btnPositivePercent.setBounds(324, 161, 111, 23);
 		frmMiniTwitter.getContentPane().add(btnPositivePercent);
+
+		JButton btnCheckNames = new JButton("Check Names");
+		btnCheckNames.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ValidNameVisitor checkNameVisitor = new ValidNameVisitor();
+				rootGroup.acceptVisitor(checkNameVisitor);
+				String msg;
+				if ( checkNameVisitor.isValid() ) {
+					msg = "All names are valid.";
+				} else {
+					msg = "Invalid names were found.";
+				}
+				JOptionPane.showMessageDialog(null, msg , "Message Count", JOptionPane.PLAIN_MESSAGE);
+			}
+		});
+		btnCheckNames.setMargin(new Insets(2, 2, 2, 2));
+		btnCheckNames.setBounds(210, 195, 104, 23);
+		frmMiniTwitter.getContentPane().add(btnCheckNames);
+
+		JButton btnGetLatest = new JButton("Last Updated");
+		btnGetLatest.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				UpdateVisitor visitor = new UpdateVisitor();
+				rootGroup.acceptVisitor( visitor);
+				User user = visitor.getLatest();
+				SimpleDateFormat ft = new SimpleDateFormat("HH:mm:ss MM/dd/yyyy");
+				String msg = "The last updated user was " + user.getName() + " who was last updated at "
+						+ ft.format(user.getNewsFeed().getLastUpdateTime() );
+				JOptionPane.showMessageDialog(null, msg , "Message Count", JOptionPane.PLAIN_MESSAGE);
+			}
+		});
+		btnGetLatest.setMargin(new Insets(2, 2, 2, 2));
+		btnGetLatest.setBounds(324, 195, 111, 23);
+		frmMiniTwitter.getContentPane().add(btnGetLatest);
 	}
 
 	private void setHintText( JTextField txt, String msg){

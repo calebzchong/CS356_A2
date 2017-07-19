@@ -21,6 +21,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.text.SimpleDateFormat;
 
 /**
  * GUI for User functions
@@ -36,6 +37,7 @@ public class UserPanel {
 	private JButton btnPost;
 	private JList<Post> newsFeedList;
 	private NewsFeedObserver ob;
+	private JLabel lblLastUpdate;
 
 	/**
 	 * Create the application.
@@ -60,9 +62,10 @@ public class UserPanel {
 		});
 		frame.setTitle( user.toString() + "'s User Panel");
 		frame.setResizable(false);
-		frame.setBounds(100, 100, 350, 392);
+		frame.setBounds(100, 100, 351, 407);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
+		
 		
 		JTextArea txtPost = new JTextArea();
 		txtPost.addKeyListener(new KeyAdapter() {
@@ -196,6 +199,18 @@ public class UserPanel {
 		newsFeedScrollPane.setBounds(10, 221, 324, 131);
 		frame.getContentPane().add(newsFeedScrollPane);
 		
+		SimpleDateFormat ft = new SimpleDateFormat("HH:mm:ss MM/dd/yyyy");
+		JLabel lblCreatedTime = new JLabel("Created: " + ft.format(user.getCreationTime()));
+		lblCreatedTime.setFont(new Font("Tahoma", Font.PLAIN, 9));
+		lblCreatedTime.setBounds(10, 357, 166, 14);
+		frame.getContentPane().add(lblCreatedTime);
+		
+		lblLastUpdate = new JLabel("Last Update:");
+		update();
+		lblLastUpdate.setFont(new Font("Tahoma", Font.PLAIN, 9));
+		lblLastUpdate.setBounds(186, 357, 149, 14);
+		frame.getContentPane().add(lblLastUpdate);
+		
 
 	}
 	
@@ -212,4 +227,8 @@ public class UserPanel {
 		newsFeedList.ensureIndexIsVisible(index);
 	}
 
+	public void update() {
+		SimpleDateFormat ft = new SimpleDateFormat("HH:mm:ss MM/dd/yyyy");
+		lblLastUpdate.setText("Last Updated: " + ft.format(user.getNewsFeed().getLastUpdateTime()));
+	}
 }

@@ -37,7 +37,7 @@ public class CountingVisitor implements Visitor{
 		return msgCount;
 	}
 	
-	public void resetCount(){
+	public void reset(){
 		usersCount = 0;
 		groupsCount = 0;
 		msgCount = 0;

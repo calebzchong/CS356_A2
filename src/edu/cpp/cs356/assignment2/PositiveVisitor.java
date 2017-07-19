@@ -55,7 +55,7 @@ public class PositiveVisitor implements Visitor {
 		//Do nothing
 	}
 	
-	public void resetCount(){
+	public void reset(){
 		positiveCount = 0;
 		totalCount = 0;
 	}
