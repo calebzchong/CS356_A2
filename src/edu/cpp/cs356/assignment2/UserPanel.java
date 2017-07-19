@@ -22,6 +22,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.SimpleDateFormat;
+import java.awt.Toolkit;
 
 /**
  * GUI for User functions
@@ -54,6 +55,7 @@ public class UserPanel {
 	 */
 	private void initialize() {
 		frame = new JFrame();
+		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(UserPanel.class.getResource("/edu/cpp/cs356/assignment2/icon.png")));
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {

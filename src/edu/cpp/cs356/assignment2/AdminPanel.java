@@ -221,6 +221,8 @@ public class AdminPanel {
 		JButton btnMessagesCount = new JButton("Message Count");
 		btnMessagesCount.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				countingVisitor.reset();
+				rootGroup.acceptVisitor(countingVisitor);
 				CountingVisitor v = (CountingVisitor)countingVisitor;
 				String msg = "There are " + v.getMessageCount() + " messages total.";
 				JOptionPane.showMessageDialog(null, msg , "Message Count", JOptionPane.PLAIN_MESSAGE);
@@ -255,7 +257,7 @@ public class AdminPanel {
 				} else {
 					msg = "Invalid names were found.";
 				}
-				JOptionPane.showMessageDialog(null, msg , "Message Count", JOptionPane.PLAIN_MESSAGE);
+				JOptionPane.showMessageDialog(null, msg , "User ID Validity", JOptionPane.PLAIN_MESSAGE);
 			}
 		});
 		btnCheckNames.setMargin(new Insets(2, 2, 2, 2));
@@ -271,7 +273,7 @@ public class AdminPanel {
 				SimpleDateFormat ft = new SimpleDateFormat("HH:mm:ss MM/dd/yyyy");
 				String msg = "The last updated user was " + user.getName() + " who was last updated at "
 						+ ft.format(user.getNewsFeed().getLastUpdateTime() );
-				JOptionPane.showMessageDialog(null, msg , "Message Count", JOptionPane.PLAIN_MESSAGE);
+				JOptionPane.showMessageDialog(null, msg , "Last Updated", JOptionPane.PLAIN_MESSAGE);
 			}
 		});
 		btnGetLatest.setMargin(new Insets(2, 2, 2, 2));
